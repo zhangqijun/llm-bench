@@ -10,8 +10,8 @@ A benchmarking tool for evaluating LLM (Large Language Model) performance.
 
 | Model Name | Date | IQ Score | EQ Score | Parameters | Quantization | Architecture |
 |------------|------|---------|---------|------------|-------------|-------------|
-| claude-3.7-sonnet | 2025-04-24 15:06:49 | 0.825 | 0.95 | 8.0B | Q4_K_M | claude |
-| deepseek-chat | 2025-04-24 14:23:40 | 0.85 | 0.8875 | 70.6B | Q4_K_M | deepseek |
+| claude-3.7-sonnet | 2025-04-24 15:06:49 | 0.825 | 0.95 | - | - | claude |
+| deepseek-chat | 2025-04-24 14:23:40 | 0.85 | 0.8875 | 684B | - | deepseek |
 | deepseek-r1-32b-qwen-distill-fp16 | 2025-04-27 21:49:41 | 0.85 | 0.8 | 32.8B | F16 | qwen2 |
 | deepseek-r1-32b-qwen-distill-q8_0 | 2025-04-27 21:01:28 | 0.825 | 0.7375 | 32.8B | Q8_0 | qwen2 |
 | qwq-latest | 2025-04-25 16:47:10 | 0.8 | 0.7375 | 32.8B | Q4_K_M | qwen2 |
