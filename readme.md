@@ -8,6 +8,14 @@ A benchmarking tool for evaluating LLM (Large Language Model) performance.
 
 ## Latest Benchmark Results (Sorted by IQ+EQ Score)
 
+![Model EQ-IQ Scores Distribution](precision/model_scores_plot.png)
+
+*Chart Description:*
+- X-axis: EQ Score (Emotional Intelligence)
+- Y-axis: IQ Score (Cognitive Intelligence)
+- Colors: Different API sources
+- Labels: Model names (optimized to avoid overlap)
+
 | Model Name | Date | IQ Score | EQ Score | Parameters | Quantization | Architecture |
 |------------|------|---------|---------|------------|-------------|-------------|
 | claude-3.7-sonnet | 2025-04-24 15:06:49 | 0.825 | 0.95 | - | - | claude |
