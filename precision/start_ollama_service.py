@@ -32,7 +32,29 @@ MODEL_NAMES = {
     '32b-q4': 'deepseek-r1:32b-qwen-distill-q4_K_M',
     '70b-int8': 'deepseek-r1:70b-llama-distill-q8_0',
     '70b-fp16': 'deepseek-r1:70b-llama-distill-fp16',
-    '70b-q4': 'deepseek-r1:70b-llama-distill-q4_K_M'
+    '70b-q4': 'deepseek-r1:70b-llama-distill-q4_K_M',
+    'qwen3_0.6b': 'qwen3:0.6b',
+    'qwen3_1.7b': 'qwen3:1.7b',
+    'qwen3_4b': 'qwen3:4b',
+    'qwen3_8b': 'qwen3:8b',
+    'qwen3_14b': 'qwen3:14b',
+    'qwen3_30b': 'qwen3:30b',
+    'qwen3_32b': 'qwen3:32b',
+    'qwen3_0.6b-fp16': 'qwen3:0.6b-fp16',
+    'qwen3_0.6b-q8_0': 'qwen3:0.6b-q8_0',
+    'qwen3_1.7b-fp16': 'qwen3:1.7b-fp16',
+    'qwen3_1.7b-q8_0': 'qwen3:1.7b-q8_0',
+    'qwen3_4b-fp16': 'qwen3:4b-fp16',
+    'qwen3_4b-q8_0': 'qwen3:4b-q8_0',
+    'qwen3_8b-fp16': 'qwen3:8b-fp16',
+    'qwen3_8b-q8_0': 'qwen3:8b-q8_0',
+    'qwen3_14b-fp16': 'qwen3:14b-fp16',
+    'qwen3_14b-q8_0': 'qwen3:14b-q8_0',
+    'qwen3_30b-a3b': 'qwen3:30b-a3b',
+    'qwen3_30b-a3b-fp16': 'qwen3:30b-a3b-fp16',
+    'qwen3_30b-a3b-q8_0': 'qwen3:30b-a3b-q8_0',
+    'qwen3_32b-fp16': 'qwen3:32b-fp16',
+    'qwen3_32b-q8_0': 'qwen3:32b-q8_0'
 }
 
 def check_service_ready(port: int, timeout: int = 3600):
@@ -106,12 +128,16 @@ def start_service(model_size: str, port: int = 11434):
 def main():
     """主函数：自动测试所有模型"""
     models = [
-        '1.5b-int8', '1.5b-fp16', '1.5b-q4',
-        '7b-int8', '7b-fp16', '7b-q4',
-        '8b-int8', '8b-fp16', '8b-q4',
-        '14b-int8', '14b-fp16', '14b-q4',
-        '32b-int8', '32b-fp16', '32b-q4',
-        '70b-int8', '70b-fp16', '70b-q4'
+        # 'qwen3_30b-a3b-fp16', 'qwen3_4b',
+        # 'qwen3_8b', 'qwen3_14b', 'qwen3_30b',
+        # 'qwen3_32b', 'qwen3_0.6b-fp16',
+        # 'qwen3_0.6b-q8_0', 'qwen3_1.7b-fp16',
+        # 'qwen3_1.7b-q8_0', 'qwen3_4b-fp16',
+        # 'qwen3_4b-q8_0', 'qwen3_8b-fp16',
+        # 'qwen3_8b-q8_0', 'qwen3_14b-fp16',
+        # 'qwen3_14b-q8_0', 'qwen3_30b-a3b',
+        # 'qwen3_30b-a3b-q8_0',
+        'qwen3_32b-fp16', 'qwen3_32b-q8_0'
     ]
     
     parser = argparse.ArgumentParser()

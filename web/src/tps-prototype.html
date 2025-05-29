@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大模型TPS测试工具原型图</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .prototype-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .prototype-section {
+            margin-bottom: 30px;
+            border: 1px dashed #ccc;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .prototype-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #444;
+        }
+        .prototype-element {
+            background: #f9f9f9;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        .form-row {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .form-label {
+            width: 120px;
+            font-weight: bold;
+        }
+        .form-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .chart-placeholder {
+            height: 300px;
+            background: #e9e9e9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .log-box {
+            height: 200px;
+            background: #333;
+            color: #fff;
+            padding: 10px;
+            overflow-y: auto;
+            font-family: monospace;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="prototype-container">
+        <h1>大模型TPS测试工具 - 静态原型图</h1>
+        
+        <!-- 配置区域 -->
+        <div class="prototype-section">
+            <div class="prototype-title">测试配置</div>
+            
+            <div class="form-row">
+                <div class="form-label">后端类型</div>
+                <select class="form-input">
+                    <option>vLLM</option>
+                    <option>SGLang</option>
+                    <option>Ollama</option>
+                    <option>自定义</option>
+                </select>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-label">模型选择</div>
+                <select class="form-input">
+                    <option>Qwen/Qwen2.5-0.5B-Instruct</option>
+                    <option>Qwen/Qwen2.5-1.5B-Instruct</option>
+                    <option>Qwen/Qwen2.5-3B-Instruct</option>
+                    <option>Qwen/Qwen2.5-7B-Instruct</option>
+                    <option>自定义模型</option>
+                </select>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-label">API URL</div>
+                <input type="text" class="form-input" value="http://localhost:8000/v1">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-label">API Key</div>
+                <input type="password" class="form-input" placeholder="可选">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-label">测试时长(秒)</div>
+                <input type="number" class="form-input" value="30">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-label">输入Token数</div>
+                <input type="number" class="form-input" value="50">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-label">输出Token数</div>
+                <input type="number" class="form-input" value="100">
+            </div>
+        </div>
+        
+        <!-- 测试控制 -->
+        <div class="prototype-section">
+            <div class="prototype-title">测试控制</div>
+            <button class="button">开始测试</button>
+            <button class="button" style="background:#f44336">停止测试</button>
+        </div>
+        
+        <!-- 实时图表 -->
+        <div class="prototype-section">
+            <div class="prototype-title">TPS实时曲线</div>
+            <div class="chart-placeholder">TPS实时变化曲线图</div>
+        </div>
+        
+        <!-- 统计信息 -->
+        <div class="prototype-section">
+            <div class="prototype-title">性能指标</div>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div>当前TPS</div>
+                    <div>0.00</div>
+                </div>
+                <div class="stat-box">
+                    <div>平均TPS</div>
+                    <div>0.00</div>
+                </div>
+                <div class="stat-box">
+                    <div>最高TPS</div>
+                    <div>0.00</div>
+                </div>
+                <div class="stat-box">
+                    <div>总Tokens</div>
+                    <div>0</div>
+                </div>
+                <div class="stat-box">
+                    <div>GPU使用率</div>
+                    <div>0%</div>
+                </div>
+                <div class="stat-box">
+                    <div>CPU使用率</div>
+                    <div>0%</div>
+                </div>
+                <div class="stat-box">
+                    <div>内存使用</div>
+                    <div>0MB</div>
+                </div>
+                <div class="stat-box">
+                    <div>显存使用</div>
+                    <div>0MB</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 日志区域 -->
+        <div class="prototype-section">
+            <div class="prototype-title">测试日志</div>
+            <div class="log-box">
+                <div>[14:33:05] 系统初始化完成</div>
+                <div>[14:33:10] 连接到API: http://localhost:8000/v1</div>
+                <div>[14:33:15] 开始测试模型: Qwen/Qwen2.5-7B-Instruct</div>
+                <div>[14:33:20] 当前TPS: 12.45</div>
+                <div>[14:33:25] 当前TPS: 15.32</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

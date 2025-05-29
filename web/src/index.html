@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM 性能测试工具集</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .tool-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.15);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .tool-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .tool-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .tool-description {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 15px;
+            background: rgba(0,255,0,0.2);
+            border: 1px solid rgba(0,255,0,0.5);
+        }
+
+        .status-badge.new {
+            background: rgba(255,215,0,0.2);
+            border: 1px solid rgba(255,215,0,0.5);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        .quick-start {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .quick-start h2 {
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .quick-start ol {
+            list-style-position: inside;
+            line-height: 2;
+        }
+
+        .quick-start code {
+            background: rgba(0,0,0,0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 LLM 性能测试工具集</h1>
+        <p class="subtitle">专业的大语言模型性能评估与基准测试平台</p>
+
+        <div class="tools-grid">
+            <a href="tps-test.html" class="tool-card">
+                <div class="tool-icon">📊</div>
+                <div class="tool-title">TPS 性能测试</div>
+                <div class="tool-description">
+                    实时测试大模型的 Tokens Per Second 性能，
+                    支持 vLLM、OpenAI 兼容接口，
+                    提供实时图表和详细统计
+                </div>
+                <div class="status-badge new">新功能</div>
+            </a>
+
+            <a href="index.html" class="tool-card" onclick="alert('配置中心功能开发中...'); return false;">
+                <div class="tool-icon">⚙️</div>
+                <div class="tool-title">配置中心</div>
+                <div class="tool-description">
+                    统一管理 vLLM、Ollama 等推理框架配置，
+                    支持多种加速框架，
+                    一键保存和加载配置
+                </div>
+                <div class="status-badge">开发中</div>
+            </a>
+
+            <a href="#" class="tool-card" onclick="alert('批量测试功能即将推出...'); return false;">
+                <div class="tool-icon">🔄</div>
+                <div class="tool-title">批量测试</div>
+                <div class="tool-description">
+                    支持多模型对比测试，
+                    自动生成性能报告，
+                    导出测试结果
+                </div>
+                <div class="status-badge">即将推出</div>
+            </a>
+        </div>
+
+        <div class="quick-start">
+            <h2>🎯 快速开始</h2>
+            <ol>
+                <li>启动 vLLM 服务：<code>python -m vllm.entrypoints.openai.api_server --model Qwen/Qwen2.5-0.5B-Instruct</code></li>
+                <li>启动测试工具：<code>cd web && ./start_tps_test.sh</code></li>
+                <li>访问测试页面：<a href="tps-test.html" style="color: #00d4ff;">http://localhost:8080/tps-test.html</a></li>
+                <li>配置 API URL 为 <code>http://localhost:5000/v1</code>（使用代理）或 <code>http://localhost:8000/v1</code>（直连）</li>
+                <li>点击"开始测试"按钮，查看实时 TPS 性能</li>
+            </ol>
+        </div>
+
+        <div class="footer">
+            <p>LLM Bench - 专注于大语言模型性能测试</p>
+            <p>支持 vLLM、Ollama、OpenAI 等主流推理框架</p>
+        </div>
+    </div>
+</body>
+</html>
