@@ -8,6 +8,6 @@ data/*.json
 outputs
 # Log files
 *.log
-
 # Data files
 precision/model_scores.csv
+__pycache__

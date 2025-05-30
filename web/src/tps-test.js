@@ -113,7 +113,7 @@ class TPSTest {
         const minTokens = document.getElementById('minTokens');
         const maxTokens = document.getElementById('maxTokens');
 
-        testButton.addEventListener('click', () => this.toggleTest());
+        testButton.addEventListener('click', () => this.runBenchmark());
 
         modelSelect.addEventListener('change', (e) => {
             if (e.target.value === 'custom') {
@@ -126,7 +126,7 @@ class TPSTest {
             this.saveConfig();
         });
 
-        backendTypeSelect.addEventListener('change', (e) => {
+        backendTypeSelect.addEventListener('change', async (e) => {
             const backendUrls = {
                 'vllm': 'http://localhost:8000/v1',
                 'sglang': 'http://localhost:30000',
@@ -138,6 +138,12 @@ class TPSTest {
                 apiUrlInput.value = backendUrls[e.target.value];
             }
             this.saveConfig();
+            
+            // 切换后端类型时自动加载模型列表
+            if (e.target.value !== 'custom') {
+                await this.loadModels();
+                this.loadSavedConfig();
+            }
         });
 
         // 保存配置
@@ -146,20 +152,22 @@ class TPSTest {
         });
     }
 
+
+    
     async loadModels() {
         try {
-            const config = this.getConfig();
-            const headers = {
-                'Content-Type': 'application/json'
-            };
-            
-            if (config.apiKey) {
-                headers['Authorization'] = `Bearer ${config.apiKey}`;
+            const apiUrl = document.getElementById('apiUrl').value;
+            const backendType = document.getElementById('backendType').value;
+            if (!apiUrl) {
+                throw new Error('API URL未配置');
             }
 
-            const response = await fetch(`${config.apiUrl}/models`, {
+            const response = await fetch('/v1/models', {
                 method: 'GET',
-                headers: headers
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Backend-Type': backendType
+                }
             });
 
             if (!response.ok) {
@@ -167,7 +175,7 @@ class TPSTest {
             }
 
             const data = await response.json();
-            return data.data.map(model => model.id);
+            return data.models || (data.model_id ? [data.model_id] : []);
         } catch (error) {
             this.log(`获取模型列表错误: ${error.message}`, 'error');
             return [];
@@ -466,6 +474,110 @@ class TPSTest {
         document.getElementById('avgTps').textContent = avg.toFixed(2);
         document.getElementById('maxTps').textContent = max.toFixed(2);
         document.getElementById('totalTokens').textContent = total;
+    }
+
+    async runBenchmark() {
+        const testButton = document.getElementById('testButton');
+        
+        // 防止重复点击
+        if (testButton.disabled) {
+            return;
+        }
+        
+        testButton.disabled = true;
+        testButton.textContent = '压测中...';
+        testButton.classList.add('testing');
+        
+        try {
+            // 获取配置
+            const config = this.getConfig();
+            const datasetSelect = document.getElementById('datasetSelect').value;
+            
+            // 验证必要参数
+            if (!config.model) {
+                throw new Error('请选择模型');
+            }
+            if (!config.apiUrl) {
+                throw new Error('请输入API URL');
+            }
+            
+            this.log('开始运行压测...', 'success');
+            this.log(`模型: ${config.model}`);
+            this.log(`API URL: ${config.apiUrl}`);
+            this.log(`并发数: 3`);
+            this.log(`最小Token数: ${config.minTokens}`);
+            this.log(`最大Token数: ${config.maxTokens}`);
+            this.log(`数据集: ${datasetSelect || 'openqa'}`);
+            
+            // 准备请求数据
+            const requestData = {
+                'api_url': config.apiUrl,
+                'parallel': 3,  // 固定并发数
+                'model': config.model,
+                'min-tokens': config.minTokens,
+                'max-tokens': config.maxTokens,
+                'datasets': datasetSelect || 'openqa'
+            };
+            
+            // 如果有API key，添加到请求中
+            if (config.apiKey) {
+                requestData['api_key'] = config.apiKey;
+            }
+            
+            // 调用benchmark接口
+            const response = await fetch('/v1/benchmark', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            // 显示结果
+            this.log('压测完成！', 'success');
+            this.log('正在跳转到结果页面...', 'success');
+            
+            if (result.status === 'success') {
+                // 准备结果数据
+                const resultsData = {
+                    testConfig: {
+                        model: config.model,
+                        apiUrl: config.apiUrl,
+                        parallel: 3,
+                        dataset: datasetSelect || 'openqa',
+                        testTime: new Date().toLocaleString(),
+                        status: 'success'
+                    },
+                    metrics: result.metrics,
+                    percentiles: result.percentiles
+                };
+                
+                // 保存到localStorage
+                localStorage.setItem('benchmarkResults', JSON.stringify(resultsData));
+                
+                // 延迟跳转，让用户看到完成消息
+                setTimeout(() => {
+                    window.open('benchmark-results.html', '_blank');
+                }, 1000);
+            } else {
+                this.log(`压测失败: ${JSON.stringify(result, null, 2)}`, 'error');
+            }
+            
+        } catch (error) {
+            this.log(`压测失败: ${error.message}`, 'error');
+        } finally {
+            // 恢复按钮状态
+            testButton.disabled = false;
+            testButton.textContent = '开始测试';
+            testButton.classList.remove('testing');
+        }
     }
 
     log(message, type = 'info') {

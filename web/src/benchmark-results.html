@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>压测结果报告</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #00d4ff, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .test-info {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .test-info h2 {
+            margin-bottom: 15px;
+            color: #00d4ff;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+
+        .info-label {
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        .info-value {
+            font-weight: bold;
+            color: #00d4ff;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00d4ff, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .metric-unit {
+            font-size: 0.9rem;
+            opacity: 0.6;
+        }
+
+        .chart-section {
+            margin-bottom: 30px;
+        }
+
+        .chart-container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .chart-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #00d4ff;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 400px;
+        }
+
+        .percentile-chart {
+            height: 300px;
+        }
+
+        .performance-summary {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .summary-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #00d4ff;
+            text-align: center;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .summary-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .summary-item h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .summary-item .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .summary-item .description {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .status-success {
+            background: linear-gradient(45deg, #51cf66, #40c057);
+        }
+
+        .status-warning {
+            background: linear-gradient(45deg, #ffd43b, #fab005);
+            color: #333;
+        }
+
+        .status-error {
+            background: linear-gradient(45deg, #ff6b6b, #fa5252);
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .export-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #00d4ff, #0099cc);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .export-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .metric-value {
+                font-size: 2rem;
+            }
+            
+            .back-button, .export-button {
+                position: static;
+                margin: 10px;
+                display: block;
+                width: calc(100% - 20px);
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="goBack()">← 返回测试</button>
+    <button class="export-button" onclick="exportResults()">导出报告</button>
+
+    <div class="container">
+        <div class="header">
+            <h1>压测结果报告</h1>
+            <div class="subtitle">性能测试详细分析</div>
+        </div>
+
+        <div id="loadingSection" class="loading">
+            <div class="loading-spinner"></div>
+            <div>正在加载压测结果...</div>
+        </div>
+
+        <div id="resultsSection" style="display: none;">
+            <!-- 测试信息 -->
+            <div class="test-info">
+                <h2>测试配置</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">模型</span>
+                        <span class="info-value" id="testModel">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">API URL</span>
+                        <span class="info-value" id="testApiUrl">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">并发数</span>
+                        <span class="info-value" id="testParallel">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">数据集</span>
+                        <span class="info-value" id="testDataset">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">测试时间</span>
+                        <span class="info-value" id="testTime">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">状态</span>
+                        <span class="info-value">
+                            <span id="testStatus">成功</span>
+                            <span class="status-badge status-success">PASSED</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 核心指标 -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="totalRequests">0</div>
+                    <div class="metric-label">总请求数</div>
+                    <div class="metric-unit">requests</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="successRate">0%</div>
+                    <div class="metric-label">成功率</div>
+                    <div class="metric-unit">success rate</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="avgRps">0</div>
+                    <div class="metric-label">平均RPS</div>
+                    <div class="metric-unit">requests/sec</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="avgTps">0</div>
+                    <div class="metric-label">平均TPS</div>
+                    <div class="metric-unit">tokens/sec</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="totalTokens">0</div>
+                    <div class="metric-label">总Token数</div>
+                    <div class="metric-unit">tokens</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="avgResponseTime">0ms</div>
+                    <div class="metric-label">平均响应时间</div>
+                    <div class="metric-unit">milliseconds</div>
+                </div>
+            </div>
+
+            <!-- 图表区域 -->
+            <div class="chart-section">
+                <!-- 响应时间分布图 -->
+                <div class="chart-container">
+                    <div class="chart-title">响应时间分布</div>
+                    <div class="chart-wrapper">
+                        <canvas id="responseTimeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 百分位数图表 -->
+                <div class="chart-container">
+                    <div class="chart-title">响应时间百分位数</div>
+                    <div class="chart-wrapper percentile-chart">
+                        <canvas id="percentileChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 性能趋势图 -->
+                <div class="chart-container">
+                    <div class="chart-title">性能指标对比</div>
+                    <div class="chart-wrapper">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 性能总结 -->
+            <div class="performance-summary">
+                <div class="summary-title">性能评估总结</div>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <h3>吞吐量评级</h3>
+                        <div class="value" id="throughputGrade">A+</div>
+                        <div class="description">基于TPS和RPS综合评估</div>
+                    </div>
+                    <div class="summary-item">
+                        <h3>延迟评级</h3>
+                        <div class="value" id="latencyGrade">A</div>
+                        <div class="description">基于响应时间分布评估</div>
+                    </div>
+                    <div class="summary-item">
+                        <h3>稳定性评级</h3>
+                        <div class="value" id="stabilityGrade">A</div>
+                        <div class="description">基于成功率和方差评估</div>
+                    </div>
+                    <div class="summary-item">
+                        <h3>综合评分</h3>
+                        <div class="value" id="overallScore">92</div>
+                        <div class="description">综合性能评分</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="benchmark-results.js"></script>
+</body>
+</html>
